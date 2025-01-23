@@ -2,7 +2,7 @@ import streamlit as st
 
 st.title("🎈 Criado no Vscode")
 
-'''
+_ = '''
 
 X. DATA ANALYSIS
 
@@ -25,7 +25,7 @@ st.write(
     
     '''
     ## DATA ANALYSIS
-    
+
     - Model Evaluation and Refinement
     
     '''
