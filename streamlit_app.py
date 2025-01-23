@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title(":thumbs_up: Criado no Vscode")
+st.title("Outros métodos")
 
 _ = '''
 
