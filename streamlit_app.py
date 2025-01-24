@@ -1,10 +1,21 @@
 import streamlit as st
 
+import pandas as pd
+import numpy as np
+import matplotlib.plyplot as plt # type: ignore
+
+from pyodide.http import pyfetch # type: ignore
+
+
+filepath = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-DA0101EN-SkillsNetwork/labs/Data%20files/module_5_auto.csv'
+df = pd.read_csv(filepath, header=None)
+
+
 st.title("Outros métodos")
 
 _ = '''
 
-X. DATA ANALYSIS
+X. MODEL SELECTION
 
 X.1. Model Evaluation and Refinement
 
@@ -24,7 +35,7 @@ X.1. Model Evaluation and Refinement
 st.write(
     
     '''
-    ## DATA ANALYSIS
+    ## MODEL SELECTION
 
     - Model Evaluation and Refinement
     
