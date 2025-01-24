@@ -9,8 +9,10 @@ filepath = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/I
 df = pd.read_csv(filepath, header=None)
 #df.drop(['Unnamed: 0.1', 'Unnamed: 0'], axis=1, inplace=True)
 #df=df._get_numeric_data()
-st.dataframe(df)
 
+
+df.drop(['Unnamed: 0'],axis=1, inplace=True)
+st.dataframe(df)
 
 
 st.title("Outros métodos")
