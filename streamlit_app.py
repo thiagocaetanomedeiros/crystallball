@@ -1,12 +1,18 @@
 import streamlit as st
 
 
-st.title("Outros métodos")
+st.title("Juntando Coursera com Desafio da pós")
 
 st.write(
     
     '''
-    ## MODEL SELECTION
+    ## Atividades
+    1) Pesquisar e criar no Python uma lista de sites para a coleta destes
+    indicadores. (Célula de Texto)
+    OBS.: com minhas sugestões ou outros de sua preferência.
+    2) Criar um código Python que interaja com o usuário coletando os valores
+    dos índices indicados neste documento. Devem ser salvos em uma lista
+    e exibidos no final para verificação.
 
     - Model Evaluation and Refinement
     
@@ -14,23 +20,26 @@ st.write(
  
 )
 
+indicesFinanceiros = {
+    "CDI": "https://www.bcb.gov.br/htms/SELIC/SELICdiarios.asp?frame=1",
+    "Taxa Selic": "https://www.bcb.gov.br/",
+    "IPCA": "https://www.bcb.gov.br/",
+    "IFIX": "https://br.investing.com/indices/bm-fbovespa-real-estate-ifix",
+    "IBOV": "https://br.investing.com/indices/bovespa",
+    "S&P500": "https://br.investing.com/indices/us-spx-500",
+    "Nasdaq": "https://br.investing.com/indices/nasdaq-composite",
+    "Nasdaq-100": "https://br.investing.com/indices/nq-100"
+}
 
-import streamlit as st
-
-# Título da aplicação
-st.title("Formulário com Streamlit")
-
-# Input de texto
-nome = st.text_input("Digite seu nome:")
 
 # Input de número
-idade = st.number_input("Digite sua idade:", min_value=0, max_value=120)
+#idade = st.number_input("Digite sua idade:", min_value=0, max_value=120)
 
 # Caixa de seleção
-sexo = st.selectbox("Selecione seu sexo:", ["Masculino", "Feminino", "Outro"])
+indiceSelect = st.selectbox("O índice a ser coletado:", list(indicesFinanceiros.keys()))
 
 # Slider
-nota = st.slider("Dê uma nota para o nosso app:", 0, 10, 5)
+#nota = st.slider("Dê uma nota para o nosso app:", 0, 10, 5)
 
 # Checkbox
 aceita = st.checkbox("Aceita os termos e condições?")
@@ -38,7 +47,9 @@ aceita = st.checkbox("Aceita os termos e condições?")
 # Botão para processar os dados
 if st.button("Enviar"):
     if aceita:
-        st.success(f"Obrigado, {nome}! Você tem {idade} anos, se identificou como {sexo}, e deu nota {nota}.")
+        st.success(f"O índice selecionado foi {indiceSelect}.")
+        st.write(f"Link para coleta: {indicesFinanceiros[indiceSelect]}")
+        st.write(f"Abaixo estão os índices financeiros disponíveis: {indicesFinanceiros.keys()}")    
     else:
         st.warning("Você precisa aceitar os termos e condições para prosseguir.")
 
