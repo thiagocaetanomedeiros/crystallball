@@ -13,8 +13,6 @@ st.write(
     2) Criar um código Python que interaja com o usuário coletando os valores
     dos índices indicados neste documento. Devem ser salvos em uma lista
     e exibidos no final para verificação.
-
-    - Model Evaluation and Refinement
     
     '''
  
@@ -32,26 +30,14 @@ indicesFinanceiros = {
 }
 
 
-# Input de número
-#idade = st.number_input("Digite sua idade:", min_value=0, max_value=120)
-
 # Caixa de seleção
 indiceSelect = st.selectbox("O índice a ser coletado:", list(indicesFinanceiros.keys()))
 
-# Slider
-#nota = st.slider("Dê uma nota para o nosso app:", 0, 10, 5)
-
-# Checkbox
-aceita = st.checkbox("Aceita os termos e condições?")
-
 # Botão para processar os dados
 if st.button("Enviar"):
-    if aceita:
-        st.success(f"O índice selecionado foi {indiceSelect}.")
-        st.write(f"Link para coleta: {indicesFinanceiros[indiceSelect]}")
-        st.write(f"Abaixo estão os índices financeiros disponíveis: {indicesFinanceiros.keys()}")    
-    else:
-        st.warning("Você precisa aceitar os termos e condições para prosseguir.")
+    st.success(f"O índice selecionado foi {indiceSelect}.")
+    st.write(f"Link para coleta: {indicesFinanceiros[indiceSelect]}")
+    st.write(f"Índices financeiros disponíveis: {indicesFinanceiros.keys()}")
 
 
 
