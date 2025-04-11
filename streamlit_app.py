@@ -37,7 +37,7 @@ indiceSelect = st.selectbox("O índice a ser coletado:", list(indicesFinanceiros
 if st.button("Enviar"):
     st.success(f"O índice selecionado foi {indiceSelect}.")
     st.write(f"Link para coleta: {indicesFinanceiros[indiceSelect]}")
-    st.write(f"Índices financeiros disponíveis: {indicesFinanceiros.keys()}")
+    st.write(f"Índices financeiros disponíveis: {list(indicesFinanceiros.keys())}")
 
 
 
