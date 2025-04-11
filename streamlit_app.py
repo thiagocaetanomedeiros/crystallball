@@ -1,29 +1,8 @@
 import streamlit as st
 
 
-
-
 st.title("Outros métodos")
 
-_ = '''
-
-X. Model Selection
-
-X.1. Model Evaluation and Refinement
-
-- split your data using the train_test_split() method into training and test sets. You use the training set to train a model, discover possible predictive relationships, and then use the test set to test your model to evaluate its performance.
-- use the generalization error to measure how well your data does at predicting previously unseen data.
-- use cross-validation by splitting the data into folds where you use some of the folds as a training set, which we use to train the model, and the remaining parts are used as a test set, which we use to test the model. You iterate through the folds until you use each partition for training and testing. At the end, you average results as the estimate of out-of-sample error.
-- pick the best polynomial order and problems that arise when selecting the wrong order polynomial by analyzing models that underfit and overfit your data.
-- Select the best order of a polynomial to fit your data by minimizing the test error using a graph comparing the mean square error to the order of the fitted polynomials.
-- You should use ridge regression when there is a strong relationship among the independent variables.  
-- That ridge regression prevents overfitting.
-- Ridge regression controls the magnitude of polynomial coefficients by introducing a hyperparameter, alpha. 
-- To determine alpha, you divide your data into training  and validation data. Starting with a small value for alpha, you train the model, make a prediction using the validation data, then calculate the R-squared and store the values. You repeat the value for a larger value of alpha. You repeat the process for different alpha values, training the model, and making a prediction. You select the value of alpha that maximizes R-squared.
-- That grid search allows you to scan through multiple hyperparameters using the Scikit-learn library, which iterates over these parameters using cross-validation. Based on the results of the grid search method, you select optimum hyperparameter values.
-- The GridSearchCV() method takes in a dictionary as its argument where the key is the name of the hyperparameter, and the values are the hyperparameter values you wish to iterate over
-
-'''
 st.write(
     
     '''
@@ -34,3 +13,54 @@ st.write(
     '''
  
 )
+
+
+import streamlit as st
+
+# Título da aplicação
+st.title("Formulário com Streamlit")
+
+# Input de texto
+nome = st.text_input("Digite seu nome:")
+
+# Input de número
+idade = st.number_input("Digite sua idade:", min_value=0, max_value=120)
+
+# Caixa de seleção
+sexo = st.selectbox("Selecione seu sexo:", ["Masculino", "Feminino", "Outro"])
+
+# Slider
+nota = st.slider("Dê uma nota para o nosso app:", 0, 10, 5)
+
+# Checkbox
+aceita = st.checkbox("Aceita os termos e condições?")
+
+# Botão para processar os dados
+if st.button("Enviar"):
+    if aceita:
+        st.success(f"Obrigado, {nome}! Você tem {idade} anos, se identificou como {sexo}, e deu nota {nota}.")
+    else:
+        st.warning("Você precisa aceitar os termos e condições para prosseguir.")
+
+
+
+def interest_rate(face_value, present_value, time):
+    FV = face_value
+    PV = present_value
+    T = time
+    r = (FV / PV) ** (1 / T) - 1
+    return r/100
+
+def present_value(face_value, interest_rate, time):
+    FV = face_value
+    r = interest_rate
+    T = time
+    PV = FV / (1 + r/100) ** T
+    return PV
+
+def face_value(present_value, interest_rate, time):
+    PV = present_value
+    r = interest_rate
+    T = time
+    FV = PV * (1 + r/100) ** T
+    return FV
