@@ -41,9 +41,9 @@ st.write(
     
     '''
     ## Próximas funcionalidades:
-    # 1. Cálculo da taxas, retornos e preços unitários de títulos prefixados
-    # 2. Cálculo da taxa de retorno de títulos pós-fixados 
-    # 3. Webscrapping de índices financeiros
+    ### 1. Cálculo da taxas, retornos e preços unitários de títulos prefixados
+    ### 2. Cálculo da taxa de retorno de títulos pós-fixados 
+    ### 3. Webscrapping de índices financeiros
     1) Pesquisar e criar no Python uma lista de sites para a coleta destes
     indicadores. (Célula de Texto)
     OBS.: com minhas sugestões ou outros de sua preferência.
