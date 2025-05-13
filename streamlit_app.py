@@ -20,7 +20,9 @@ st.title("Crystall Ball - Que investimento dará maior resultado?")
 st.write(
     
     '''
-    ## Funções de Renda Fixa:
+    ## Renda Fixa:
+    ### Títulos Prefixados (Bullet)
+    #### Cálculo da Taxa Efetiva Anual
     '''
  
 )
