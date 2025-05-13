@@ -1,7 +1,18 @@
 import streamlit as st
 
 
-st.title("Juntando Coursera com Desafio da pós")
+# Planejamento do App
+# 1) COlocar todas as formulas ensinadas no módulo 1
+    # 1.1) Criar uma função para cada uma das fórmulas
+    # 1.2) Criar uma função para cada um dos índices financeiros
+    # 1.3) Usar banco de dados paraguardar índices financeiros
+# 2) Exercitar as orientações de linguagem de programação
+# 3) Disponibilizar Bibliotecas para uso no projeto final
+# 4) Criar um projeto final com o streamlit
+
+
+
+st.title("Crystall Ball - Simulador de Investimentos")
 
 st.write(
     
@@ -12,7 +23,7 @@ st.write(
     OBS.: com minhas sugestões ou outros de sua preferência.
     2) Criar um código Python que interaja com o usuário coletando os valores
     dos índices indicados neste documento. Devem ser salvos em uma lista
-    e exibidos no final para verificação.
+        e exibidos no final para verificação.
     
     '''
  
@@ -40,24 +51,3 @@ if st.button("Enviar"):
     st.write(f"Índices financeiros disponíveis: {list(indicesFinanceiros.keys())}")
 
 
-
-def interest_rate(face_value, present_value, time):
-    FV = face_value
-    PV = present_value
-    T = time
-    r = (FV / PV) ** (1 / T) - 1
-    return r/100
-
-def present_value(face_value, interest_rate, time):
-    FV = face_value
-    r = interest_rate
-    T = time
-    PV = FV / (1 + r/100) ** T
-    return PV
-
-def face_value(present_value, interest_rate, time):
-    PV = present_value
-    r = interest_rate
-    T = time
-    FV = PV * (1 + r/100) ** T
-    return FV
