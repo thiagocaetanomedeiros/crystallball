@@ -537,3 +537,489 @@ Aqui estão as fórmulas contidas no arquivo PDF, juntamente com o código Pytho
         ```
 
 Este conjunto de códigos Python implementa as fórmulas financeiras encontradas no documento, permitindo calcular métricas importantes para análise de títulos de renda fixa.
+
+
+
+
+
+
+Com certeza! A apostila apresenta diversas fórmulas financeiras importantes no contexto da renda fixa. Vamos organizar essas fórmulas em funções Python para facilitar o uso e a criação da sua biblioteca.
+
+**1. Prefixado (Bullet)**
+
+* **Conceito:** Títulos prefixados têm sua rentabilidade definida no momento da compra. O investidor recebe o valor investido mais a rentabilidade no vencimento. [cite: 102, 103, 104]
+
+* **Fórmulas:**
+
+    * Cálculo da Taxa Efetiva Anual:  
+    
+    $Taxa=([\frac{VN}{PU}]^{\frac{252}{du}}-1)x~100$
+    
+    * Cálculo do PU (Preço Unitário):  
+    
+    $PU=\frac{VN}{[\frac{Taxa}{100}+1]^{\frac{du}{252}}}$
+    
+    * Onde:
+    
+        * $VN$ = Valor Nominal do título
+        * $PU$ = Preço Unitário do título
+        * $Taxa$ = Taxa Efetiva anual
+        * $du$ = dias úteis [cite: 106, 107]
+* **Funções Python:**
+
+    ```python
+    import numpy as np
+    
+    def taxa_efetiva_anual(valor_nominal, preco_unitario, dias_uteis):
+        """
+        Calcula a taxa efetiva anual de um título prefixado (bullet).
+    
+        Args:
+            valor_nominal (float): Valor nominal do título.
+            preco_unitario (float): Preço unitário do título.
+            dias_uteis (int): Número de dias úteis até o vencimento.
+    
+        Returns:
+            float: Taxa efetiva anual (em %).
+        """
+        taxa = ((valor_nominal / preco_unitario) ** (252 / dias_uteis) - 1) * 100
+        return taxa
+    
+    def preco_unitario(valor_nominal, taxa_anual, dias_uteis):
+        """
+        Calcula o preço unitário de um título prefixado (bullet).
+    
+        Args:
+            valor_nominal (float): Valor nominal do título.
+            taxa_anual (float): Taxa efetiva anual (em %).
+            dias_uteis (int): Número de dias úteis até o vencimento.
+    
+        Returns:
+            float: Preço unitário do título.
+        """
+        taxa_decimal = taxa_anual / 100
+        pu = valor_nominal / ((1 + taxa_decimal) ** (dias_uteis / 252))
+        return pu
+    
+    # Exemplos de uso:
+    valor_nominal = 1000
+    preco = 883
+    dias = 252
+    
+    taxa = taxa_efetiva_anual(valor_nominal, preco, dias)
+    print(f"Taxa efetiva anual: {taxa:.2f}%")  # Saída: 13.25%
+    
+    pu = preco_unitario(valor_nominal, 13.25, dias)
+    print(f"Preço unitário: {pu:.2f}")  # Saída: 883.00
+    
+    
+    ```
+
+**2. Pré-fixado com Cupom**
+
+* **Conceito:** Similar ao prefixado, mas com pagamentos periódicos de juros (cupons) antes do vencimento. [cite: 115, 116, 117]
+
+* **Fórmula:**
+
+    * Cálculo do PU:
+    
+    $PU=\sum_{t=1}^{T}\frac{Ct}{[\frac{Taxa}{100}+1]^{\frac{t}{252}}}+\frac{VN}{[\frac{Taxa}{100}+1]^{\frac{T}{252}}}$
+    
+    * Conversão da Taxa:
+    
+    De Taxa periodom para taxa periodo₁ $=(1+i\%)^{\frac{n}{m}}-1$
+    
+    * Onde:
+    
+        * $PU$ = Preço unitário do ativo.
+        * $VN$ = Valor Nominal do título.
+        * $Ct$ = Pagamento de principal, cupom ou ambos no período t
+        * $t$ = cada um dos períodos (anual, semestral ou outro) para cada pagamento.
+        * $T$ = Quantidade de Períodos até o último vencimento.
+        * Taxa = Taxa de retorno do Título até o vencimento
+        * $d.u.$ = dias úteis
+        * $i$ = Taxa de Juros em um determinado período (ex. ano)
+        * $m$ = Número de dias referente aos juros (exemplo 252)
+        * $n$ = Número de dias referente ao período que se deseja calcular a taxa (exemplo semestre ou 126 dias) [cite: 119, 120, 121, 122, 126]
+* **Funções Python:**
+
+    ```python
+    import numpy as np
+    import pandas as pd
+    
+    def taxa_periodo(taxa_base, dias_base, dias_novo_periodo):
+        """
+        Converte uma taxa de um período para outro.
+    
+        Args:
+            taxa_base (float): Taxa de juros no período base (ex: anual em %).
+            dias_base (int): Número de dias no período base (ex: 252 para ano).
+            dias_novo_periodo (int): Número de dias no novo período.
+    
+        Returns:
+            float: Taxa no novo período (em %).
+        """
+        taxa_decimal = taxa_base / 100
+        taxa_convertida = (1 + taxa_decimal) ** (dias_novo_periodo / dias_base) - 1
+        return taxa_convertida * 100
+    
+    def preco_unitario_cupom(valor_nominal, taxa_anual, cupons, datas_cupons, data_vencimento):
+        """
+        Calcula o preço unitário de um título pré-fixado com cupons.
+    
+        Args:
+            valor_nominal (float): Valor nominal do título.
+            taxa_anual (float): Taxa de retorno anual do título (em %).
+            cupons (list): Lista com os valores dos cupons.
+            datas_cupons (list): Lista com as datas de pagamento dos cupons.
+            data_vencimento (datetime): Data de vencimento do título.
+    
+        Returns:
+            float: Preço unitário do título.
+        """
+        taxa_decimal = taxa_anual / 100
+        pu = 0
+        data_inicio = pd.to_datetime('today')  # Data de hoje
+    
+        for i, cupom in enumerate(cupons):
+            dias_uteis = np.busday_count(data_inicio.date(), pd.to_datetime(datas_cupons[i]).date())
+            pu += cupom / ((1 + taxa_decimal) ** (dias_uteis / 252))
+    
+        dias_uteis_vencimento = np.busday_count(data_inicio.date(), data_vencimento.date())
+        pu += valor_nominal / ((1 + taxa_decimal) ** (dias_uteis_vencimento / 252))
+    
+        return pu
+    
+    # Exemplo de uso:
+    valor_nominal = 1000
+    taxa_anual = 11
+    cupons = [48.80885, 48.80885, 1048.80885]  # Cupons e valor nominal no vencimento
+    datas_cupons = ['2024-01-02', '2024-07-01', '2025-01-02']
+    data_vencimento = pd.to_datetime('2025-01-02')
+    
+    pu_com_cupom = preco_unitario_cupom(valor_nominal, taxa_anual, cupons, datas_cupons, data_vencimento)
+    print(f"Preço unitário com cupons: {pu_com_cupom:.2f}")
+    
+    taxa_semestral = taxa_periodo(10, 252, 126)
+    print(f"Taxa semestral: {taxa_semestral:.2f}%")
+    
+    
+    ```
+
+**3. IPCA + Taxa**
+
+* **Conceito:** Títulos pós-fixados com rentabilidade atrelada à inflação (IPCA) mais uma taxa prefixada. [cite: 160, 161]
+
+* **Fórmulas:**
+
+    * VNA (Valor Nominal Atualizado):
+    
+    $VNA=1.000~x\prod_{-1}^{n-1}1+\frac{Indice~Mensal_{n}}{100}$
+    
+    * VNA (com projeção):
+    
+    $VNA=1.000~x\prod_{1}^{n-1}(1+\frac{Indice~Mensal_{n}}{100})x(1+\frac{Proje\zeta\tilde{a}o~Mensal}{100})^{\frac{du~dia}{du_{mes}}}$
+    
+    * PU (Preço Unitário):
+    
+    $PU=\frac{VNA}{[\frac{Taxa}{100}+1]^{\frac{du}{252}}}$
+    
+    * Onde:
+    
+        * $VNA$ = Valor Nominal Atualizado
+        * $Indice~Mensal_n$ = Índice de inflação do mês n
+        * $Projeção~Mensal$ = Projeção do IPCA para o próximo mês
+        * $du~dia$ = número de dias úteis entre a última divulgação do índice e a data de cálculo;
+        * $du~Mês$ = número de dias uteis entre a última e a próxima divulgação do índice. [cite: 162, 163, 164, 165, 166, 167]
+* **Funções Python:**
+
+    ```python
+    import numpy as np
+    from datetime import date
+    
+    def calcular_vna(indices_mensais):
+        """
+        Calcula o Valor Nominal Atualizado (VNA) de um título IPCA+.
+    
+        Args:
+            indices_mensais (list): Lista com os índices de inflação mensais (em %).
+    
+        Returns:
+            float: Valor Nominal Atualizado (VNA).
+        """
+        vna = 1000
+        for indice in indices_mensais:
+            vna *= (1 + indice / 100)
+        return vna
+    
+    def calcular_vna_projecao(indices_anteriores, projecao_mensal, dias_uteis_decorridos, dias_uteis_mes):
+        """
+        Calcula o VNA com projeção do IPCA para o mês atual.
+    
+        Args:
+            indices_anteriores (list): Lista com os índices de inflação mensais anteriores (em %).
+            projecao_mensal (float): Projeção do IPCA para o mês atual (em %).
+            dias_uteis_decorridos (int): Dias úteis decorridos desde a última divulgação do IPCA.
+            dias_uteis_mes (int): Total de dias úteis no mês.
+    
+        Returns:
+             float: Valor Nominal Atualizado (VNA) com projeção.
+        """
+        vna = 1000
+        for indice in indices_anteriores:
+            vna *= (1 + indice / 100)
+        vna *= (1 + projecao_mensal / 100) ** (dias_uteis_decorridos / dias_uteis_mes)
+        return vna
+    
+    def calcular_pu_ipca(vna, taxa_anual, dias_uteis):
+        """
+        Calcula o Preço Unitário (PU) de um título IPCA+.
+    
+        Args:
+            vna (float): Valor Nominal Atualizado.
+            taxa_anual (float): Taxa de juros anual do título (em %).
+            dias_uteis (int): Dias úteis até o vencimento.
+    
+        Returns:
+            float: Preço Unitário (PU).
+        """
+        taxa_decimal = taxa_anual / 100
+        pu = vna / ((1 + taxa_decimal) ** (dias_uteis / 252))
+        return pu
+    
+    # Exemplo de uso
+    indices = [0.5, 0.6, 0.4]  # Índices de inflação dos meses anteriores
+    vna_calculado = calcular_vna(indices)
+    print(f"VNA: {vna_calculado:.2f}")
+    
+    projecao = 0.7
+    dias_decorridos = 15
+    dias_no_mes = 22
+    vna_projetado = calcular_vna_projecao(indices, projecao, dias_decorridos, dias_no_mes)
+    print(f"VNA com projeção: {vna_projetado:.2f}")
+    
+    pu = calcular_pu_ipca(vna_calculado, 5.5, 223)
+    print(f"PU: {pu:.2f}")
+    ```
+
+**4. % do DI**
+
+* **Conceito:** Títulos que remuneram o investidor com um percentual da taxa DI. [cite: 203, 204]
+
+* **Fórmulas:**
+
+    * Taxa diária:
+    
+    $=(1+Taxa~Anual\%)^{\frac{1}{252}}-1$
+    
+    * Capitalização diária:
+    
+    $Capitalização~diária = DI~diario * \% do ~DI$
+    
+    * Valor Nominal diário:
+    
+    $VN~de~hoje = VN~de~ontem * (1 + Cap. Diária)$ [cite: 209, 210, 211, 212]
+* **Funções Python:**
+
+    ```python
+    def taxa_diaria(taxa_anual):
+        """
+        Calcula a taxa diária equivalente à taxa anual.
+    
+        Args:
+            taxa_anual (float): Taxa anual (em %).
+    
+        Returns:
+            float: Taxa diária (em %).
+        """
+        taxa_decimal = taxa_anual / 100
+        taxa_diaria = (1 + taxa_decimal) ** (1 / 252) - 1
+        return taxa_diaria * 100
+    
+    def valor_nominal_cdi(valor_nominal_anterior, taxa_diaria, percentual_di):
+        """
+        Calcula o valor nominal atualizado de um título que rende % do DI.
+    
+        Args:
+            valor_nominal_anterior (float): Valor nominal do dia anterior.
+            taxa_diaria (float): Taxa DI diária (em %).
+            percentual_di (float): Percentual do DI que o título paga (ex: 120).
+    
+        Returns:
+            float: Valor nominal atualizado.
+        """
+        capitalizacao_diaria = (taxa_diaria / 100) * (percentual_di / 100)
+        valor_nominal_hoje = valor_nominal_anterior * (1 + capitalizacao_diaria)
+        return valor_nominal_hoje
+    
+    # Exemplo de uso:
+    taxa_anual_di = 13.15
+    taxa_diaria_calculada = taxa_diaria(taxa_anual_di)
+    print(f"Taxa DI diária: {taxa_diaria_calculada:.5f}%")
+    
+    valor_nominal = 1000
+    percentual = 120
+    for _ in range(10):  # Calcula para 10 dias
+        valor_nominal = valor_nominal_cdi(valor_nominal, taxa_diaria_calculada, percentual)
+    print(f"Valor nominal após 10 dias: {valor_nominal:.2f}")
+    ```
+
+**5. DI + Taxa Pré**
+
+* **Conceito:** Títulos que remuneram o investidor com a variação do DI mais uma taxa prefixada. [cite: 216, 217]
+
+* **Fórmula:**
+
+    * Valor Nominal Atualizado:
+    
+    $VN_{t}=VN_{t-1}*(1+Taxa~Pre~a.a.)^{\frac{n}{252}}*(1+Taxa~Pos~a.a.)^{\frac{n}{252}}$
+    
+    * Onde:
+    
+        * $VN_t$ = Valor Nominal no período t
+        * $Taxa~Pre~a.a.$ = Taxa pré-fixada anual
+        * $Taxa~Pos~a.a.$ = Taxa pós-fixada anual (DI)
+        * $n$ = Número de dias do período [cite: 217]
+* **Funções Python:**
+
+    ```python
+    def valor_nominal_di_prefixado(valor_nominal_anterior, taxa_pre, taxa_pos, dias):
+        """
+        Calcula o valor nominal atualizado de um título que rende DI + taxa pré.
+    
+        Args:
+            valor_nominal_anterior (float): Valor nominal do dia anterior.
+            taxa_pre (float): Taxa pré-fixada anual (em %).
+            taxa_pos (float): Taxa pós-fixada anual (DI) (em %).
+            dias (int): Número de dias do período.
+    
+        Returns:
+            float: Valor nominal atualizado.
+        """
+        taxa_pre_decimal = taxa_pre / 100
+        taxa_pos_decimal = taxa_pos / 100
+        valor_nominal_atual = valor_nominal_anterior * (1 + taxa_pre_decimal) ** (dias / 252) * (
+            1 + taxa_pos_decimal) ** (dias / 252)
+        return valor_nominal_atual
+    
+    # Exemplo de uso:
+    valor_nominal_inicial = 1000
+    taxa_pre_fixada = 2
+    taxa_diaria = 12.65
+    valor_nominal_final = valor_nominal_di_prefixado(valor_nominal_inicial, taxa_pre_fixada, taxa_diaria, 10)
+    print(f"Valor nominal após 10 dias: {valor_nominal_final:.2f}")
+    
+    
+    ```
+
+**6. Duration**
+
+* **Conceito:** Mede a sensibilidade do preço de um título a mudanças nas taxas de juros. [cite: 290, 291]
+
+* **Fórmula:**
+
+    $Duration = \frac{\sum_{t=1}^{N} t \cdot \frac{CF_t}{(1 + i)^t}}{\sum_{t=1}^{N} \frac{CF_t}{(1 + i)^t}}$
+    
+    * Onde:
+    
+        * N = número de períodos até o vencimento.
+        * CFt = é o fluxo de caixa no período t.
+        * ti = é o prazo até o recebimento do fluxo
+        * i = é a taxa de desconto. [cite: 294, 295, 296]
+* **Função Python:**
+
+    ```python
+    def calcular_duration(fluxos_de_caixa, taxas_de_juros):
+        """
+        Calcula a Duration de um título de renda fixa.
+    
+        Args:
+            fluxos_de_caixa (list): Lista de tuplas, onde cada tupla contém o período
+                                  e o fluxo de caixa correspondente (ex: [(1, 100), (2, 100), (3, 1100)]).
+            taxas_de_juros (float): A taxa de juros utilizada para descontar os fluxos de caixa.
+    
+        Returns:
+            float: A Duration do título.
+        """
+    
+        numerador = sum(t * (CFt / (1 + taxas_de_juros) ** t) for t, CFt in fluxos_de_caixa)
+        denominador = sum(CFt / (1 + taxas_de_juros) ** t for t, CFt in fluxos_de_caixa)
+    
+        return numerador / denominador if denominador else 0
+    
+    # Exemplo de uso:
+    fluxos_de_caixa_exemplo = [(1, 40), (2, 40), (3, 1040)]  # Período, Fluxo de Caixa
+    taxa_de_juros_exemplo = 0.04  # 4%
+    
+    duration_exemplo = calcular_duration(fluxos_de_caixa_exemplo, taxa_de_juros_exemplo)
+    print(f"A Duration do título é aproximadamente: {duration_exemplo:.2f}")
+    
+    ```
+
+**7. Convexidade**
+
+* **Conceito:** Medida da curvatura da relação entre o preço do título e as taxas de juros. [cite: 316, 317, 318]
+
+* **Fórmula:**
+
+    $Convexidade = \frac{V_+ + V_- - 2V_0}{2V_0(\Delta y)^2}$
+    
+    * Onde:
+    
+        * V+ = Preço quando os juros caem y%
+        * V- = Preço quando os juros sobem y%
+        * V₀ = Preço Inicial
+        * Δy = variação das taxas de juros
+    * Variação do preço do título dado a convexidade:
+    
+    $Variação~no~preço~do~Título = -Duration(Δy) + 0,5 * Convexidade(Δy)^2$ [cite: 317, 318]
+* **Função Python:**
+
+    ```python
+    def calcular_convexidade(preco_aumento, preco_queda, preco_inicial, variacao_taxa):
+        """
+        Calcula a convexidade de um título de renda fixa.
+    
+        Args:
+            preco_aumento (float): Preço do título quando a taxa de juros aumenta.
+            preco_queda (float): Preço do título quando a taxa de juros diminui.
+            preco_inicial (float): Preço inicial do título.
+            variacao_taxa (float): Variação na taxa de juros (em decimal, ex: 0.01 para 1%).
+    
+        Returns:
+            float: A convexidade do título.
+        """
+        convexidade = (preco_aumento + preco_queda - 2 * preco_inicial) / (2 * preco_inicial * (variacao_taxa ** 2))
+        return convexidade
+    
+    def variacao_preco_com_convexidade(duration, convexidade, variacao_taxa):
+        """
+        Estima a variação no preço de um título usando Duration e Convexidade.
+    
+        Args:
+            duration (float): Duration do título.
+            convexidade (float): Convexidade do título.
+            variacao_taxa (float): Variação na taxa de juros (em decimal, ex: 0.01 para 1%).
+    
+        Returns:
+            float: A variação percentual estimada no preço do título.
+        """
+        variacao_preco = -duration * variacao_taxa + 0.5 * convexidade * (variacao_taxa ** 2)
+        return variacao_preco
+    
+    # Exemplo de uso:
+    preco_aumento_exemplo = 1050  # Preço quando a taxa de juros aumenta
+    preco_queda_exemplo = 950    # Preço quando a taxa de juros diminui
+    preco_inicial_exemplo = 1000  # Preço inicial do título
+    variacao_taxa_exemplo = 0.01  # Variação de 1% (0.01 em decimal)
+    duration_exemplo = 5  # Duration do título (exemplo)
+    
+    convexidade_calculada = calcular_convexidade(preco_aumento_exemplo, preco_queda_exemplo, preco_inicial_exemplo, variacao_taxa_exemplo)
+    print(f"A convexidade do título é: {convexidade_calculada:.4f}")
+    
+    variacao_preco_estimada = variacao_preco_com_convexidade(duration_exemplo, convexidade_calculada, variacao_taxa_exemplo)
+    print(f"Variação percentual estimada no preço: {variacao_preco_estimada:.4f}")
+    
+    ```
+
+Este conjunto de funções cobre as principais fórmulas financeiras da apostila. Com elas, você pode construir uma biblioteca robusta para análise de renda fixa em Python.

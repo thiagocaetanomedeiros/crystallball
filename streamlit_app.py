@@ -1,5 +1,5 @@
 import streamlit as st
-from finance import fixedrate as fr
+from src.finance import fixedrate as fr
 
 
 # Planejamento do App
