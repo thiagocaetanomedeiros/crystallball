@@ -1,4 +1,5 @@
 import streamlit as st
+from finance import fixedrate as fr
 
 
 # Planejamento do App
@@ -51,3 +52,11 @@ if st.button("Enviar"):
     st.write(f"Índices financeiros disponíveis: {list(indicesFinanceiros.keys())}")
 
 
+valor_nominal   = st.number_input("Valor nominal:", min_value=0.0)
+preco_unitario  = st.number_input("Preço Unitário:", min_value=0.0)
+dias_uteis      = st.number_input("Dias úteis até o vencimento:", min_value=0)
+
+# Cálculo da taxa efetiva anual
+if st.button("Calcular Taxa Efetiva Anual"):
+    taxa = fr.taxa_efetiva_anual(valor_nominal, preco_unitario, dias_uteis)
+    st.success(f"A taxa efetiva anual é: {taxa:.2f}%")    
